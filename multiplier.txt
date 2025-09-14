@@ -1,0 +1,141 @@
+
+								****** 2-bit multiplier********
+
+module full_adder (
+    input wire x,        // First input bit
+    input wire y,        // Second input bit
+    input wire carry_in, // Renamed from 'cin'
+    output wire result,  // Renamed from 'sum'
+    output wire carry_out // Renamed from 'cout'
+);
+
+    assign result = x ^ y ^ carry_in;  // result = x XOR y XOR carry_in
+    assign carry_out = (x & y) | (y & carry_in) | (x & carry_in); // carry_out logic
+
+endmodule
+module half_adder (
+    input wire a,       // First input bit
+    input wire b,       // Second input bit
+    output wire sum,    // Sum output
+    output wire carry   // Carry output
+);
+
+    assign sum = a ^ b;       // Sum = A XOR B
+    assign carry = a & b;     // Carry = A AND B
+
+endmodule
+module mul(a,b,p);
+input reg[1:0] a,b;
+output [3:0]p;
+
+reg [3:0]m;
+reg [1:0]c;
+always@(*)
+begin 
+m[0]=a[0]&b[0];
+m[1]=a[1]&b[0];
+m[2]=a[0]&b[1];
+m[3]=a[1]&b[1];
+p[0]=m[0];
+half_adder ha1(m[1],m[2],p[1],c[0]);
+half_adder ha2(m[3],c[0],p[2],p[3]);
+end
+endmodule
+
+
+
+
+
+
+
+
+
+								****TEST BECNCH****
+
+
+module mul_tb;
+
+    reg [1:0] a, b;
+    wire [3:0] p;
+
+    // Instantiate the multiplier module
+    mul uut (
+        .a(a),
+        .b(b),
+        .p(p)
+    );
+intial begin 
+a=2'b00; b=2'b01; #10;
+
+a=2'b11; b=2'b01; #10;
+a=2'b01; b=2'b01; #10;
+a=2'b00; b=2'b11; #10;
+end
+endmodule 
+
+								****** 3-bit multiplier********
+
+
+
+module full_adder (
+    input wire x,        // First input bit
+    input wire y,        // Second input bit
+    input wire carry_in, // Renamed from 'cin'
+    output wire result,  // Renamed from 'sum'
+    output wire carry_out // Renamed from 'cout'
+);
+
+    assign result = x ^ y ^ carry_in;  // result = x XOR y XOR carry_in
+    assign carry_out = (x & y) | (y & carry_in) | (x & carry_in); // carry_out logic
+
+endmodule
+module half_adder (
+    input wire a,       // First input bit
+    input wire b,       // Second input bit
+    output wire sum,    // Sum output
+    output wire carry   // Carry output
+);
+
+    assign sum = a ^ b;       // Sum = A XOR B
+    assign carry = a & b;     // Carry = A AND B
+
+endmodule
+
+module mul(a,b,p);
+input [2:0] a,b;
+output reg [5:0]p;
+
+reg [8:0]m;
+reg [5:0]c;
+reg [5:0]fs;
+always@(*)
+begin 
+m[0]=a[0]&b[0];
+m[1]=a[1]&b[0];
+m[2]=a[2]&b[0];
+m[3]=a[0]&b[1];
+m[4]=a[1]&b[1];
+m[5]=a[2]&b[1];
+m[6]=a[0]&b[2];
+m[7]=a[1]&b[2];
+m[8]=a[2]&b[2];
+
+
+
+p[0]=m[0];
+
+half_adder ha1(m[1],m[3],p[1],c[0]);
+full_adder fa1(m[2],m[4],c[0],fs[0],c[1]);
+half_adder ha2(m[6],fs[0],p[2],c[2]);
+half_adder ha3(m[5],c[1],fs[1],c[3]);
+full_adder fa2(m[7],fs[1],c[2],p[3],c[4]);
+full_adder fa3(m[8],c[4],c[3],p[4],p[5]);
+end
+endmodule
+
+
+
+
+
+
+
